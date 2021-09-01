@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'user.is_login.AuthMiddleWare',
 ]
 
 ROOT_URLCONF = 'wine_admin.urls'
@@ -127,6 +129,8 @@ SECRET_KEY=conf["SECRET_KEY"]
 ENV=conf["env"]
 
 print(APPID)
+
+SESSION_COOKIE_AGE=60*10
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

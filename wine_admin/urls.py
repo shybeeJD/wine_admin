@@ -17,9 +17,15 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url,include
 from wxcloud import views
+from user import views as user_views
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('user/login',user_views.login),
+    path('user/logout', user_views.logout),
+    path('index',user_views.index),
+    path('user/register',user_views.register),
     path('api/test', views.getAccessToken),
     path('api/getAllTypes', views.getAllTypes),
     path('api/updateAllTypes',views.updateAllTypes)
+
 ]
