@@ -26,6 +26,10 @@ urlpatterns = [
     path('user/register',user_views.register),
     path('api/test', views.getAccessToken),
     path('api/getAllTypes', views.getAllTypes),
-    path('api/updateAllTypes',views.updateAllTypes)
+    path('api/updateAllTypes',views.updateAllTypes),
+    path('api/getNewOrder',views.getNewOrder),
+    path('api/getAllWines',views.getAllWines),
+    path('api/getAllOrders',views.getAllOrders),
+    path('api/changeStocks',views.changeStocks),
 
 ]

@@ -66,3 +66,113 @@ def updateAllTypes(request):
     res = requests.post(url, data=json.dumps(data))
     return JsonResponse(res.json())
     #return JsonResponse({"test":'1'})
+
+def uploadPics(request):
+    imgs=request.FILES.getlist('fileList')
+    for img in imgs:
+        with open(img.name,"wb") as f:
+            for c in img.chunks():
+                f.write()
+    return JsonResponse({
+        "success":True
+    })
+
+def createWine(request):
+
+    pass
+
+def acceptOrder(request):
+    _id=request.GET.get('_id')
+    ACCESS_TOKEN = getAccessToken()
+    url = f'https://api.weixin.qq.com/tcb/databaseupdate?access_token={ACCESS_TOKEN}'
+    query = "db.collection('order').where({'_id':'%s'}).update({'data':{'status':3}})" % (_id)
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
+
+def getNewOrder(request):
+    ACCESS_TOKEN = getAccessToken()
+    limit=request.GET.get('limit')
+    offset=request.GET.get('offset')
+    url = f'https://api.weixin.qq.com/tcb/invokecloudfunction?access_token={ACCESS_TOKEN}&env={settings.ENV}&name=quickstartFunctions'
+    query = "db.collection('order').where({status:5}).get()"
+
+    data = {
+        "type": "updateStatus"
+    }
+    res = requests.post(url, data=json.dumps(data))
+    print(res.json())
+
+    url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
+    query = "db.collection('order').where({status:5}).get()"
+
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
+
+def getAllWines(request):
+    ACCESS_TOKEN = getAccessToken()
+    limit = request.GET.get('limit')
+    offset = request.GET.get('offset')
+    category_name=request.GET.get('category_name')
+    if  limit==None:
+        limit=10
+    if  offset==None:
+        offset=0
+
+    url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
+    if category_name:
+        query = "db.collection('wine').where({category_name:'%s'}).limit(%d).skip(%d).get()"%(category_name,int(limit),int(offset))
+    else:
+        query = "db.collection('wine').limit(%d).skip(%d).get()" % (int(limit),int(offset))
+
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
+def getAllOrders(request):
+    ACCESS_TOKEN = getAccessToken()
+    limit = request.GET.get('limit')
+    offset = request.GET.get('offset')
+    status =request.GET.get('status')
+    if  limit==None:
+        limit=10
+    if  offset==None:
+        offset=0
+
+    url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
+    if status:
+        query = "db.collection('order').where({status:%d}).limit(%d).skip(%d).get()"%(int(status),int(limit),int(offset))
+    else:
+        query = "db.collection('order').limit(%d).skip(%d).get()" % (int(limit),int(offset))
+
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
+
+def changeStocks(request):
+    _id = request.GET.get('_id')
+    stock=request.GET.get('stock')
+    ACCESS_TOKEN = getAccessToken()
+    url = f'https://api.weixin.qq.com/tcb/databaseupdate?access_token={ACCESS_TOKEN}'
+    query = "db.collection('wine').where({'_id':'%s'}).update({'data':{'stock':%d}})" % (_id,int(stock))
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
