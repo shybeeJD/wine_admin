@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'user.is_login.AuthMiddleWare',
+    #'user.is_login.AuthMiddleWare',
 ]
 
 ROOT_URLCONF = 'wine_admin.urls'
