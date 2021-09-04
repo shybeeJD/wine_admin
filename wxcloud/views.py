@@ -92,7 +92,20 @@ def acceptOrder(request):
     }
     res = requests.post(url, data=json.dumps(data))
     return JsonResponse(res.json())
+def refuseOrder(request):
+    _id = request.GET.get('_id')
+    if _id:
+        ACCESS_TOKEN = getAccessToken()
+        url = f'https://api.weixin.qq.com/tcb/invokecloudfunction?access_token={ACCESS_TOKEN}&env={settings.ENV}&name=quickstartFunctions'
 
+
+        data = {
+            "type": "refuseOrder",
+            "_id":_id
+        }
+        res = requests.post(url, data=json.dumps(data))
+        return JsonResponse(res.json())
+    return JsonResponse({'success':False,'msg':'no _id'})
 def getNewOrder(request):
     ACCESS_TOKEN = getAccessToken()
     limit=request.GET.get('limit')
@@ -176,3 +189,18 @@ def changeStocks(request):
     }
     res = requests.post(url, data=json.dumps(data))
     return JsonResponse(res.json())
+
+def getAddress(request):
+    address = request.GET.get('address')
+    if address:
+        ACCESS_TOKEN = getAccessToken()
+        url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
+        query = "db.collection('address').where({_id:'%s'}).get()"%(address)
+        data = {
+            "env": settings.ENV,
+            "query": query
+        }
+        res = requests.post(url, data=json.dumps(data))
+        return JsonResponse(res.json())
+
+    return JsonResponse({'success':False,'msg':'no address'})
