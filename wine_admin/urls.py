@@ -36,5 +36,6 @@ urlpatterns = [
     path('api/acceptOrder',views.acceptOrder),
     path('api/getShops',views.getShops),
     path('api/getOrders',views.getOrders),
+    path('api/updateShop',views.updateShop),
 
 ]

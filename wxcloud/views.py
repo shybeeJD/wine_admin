@@ -6,6 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 import requests
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 def getAccessToken():
 
@@ -247,4 +248,35 @@ def getOrders(request):
         "query": query
     }
     res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
+@csrf_exempt
+def updateShop(request):
+    print(request.POST)
+    data=(json.loads(request.body))
+    data=json.loads(data)
+    print(data)
+    if id not in data:
+        data['id']=None
+    req={
+        '_id':data['id'],
+        'name':data['name'],
+        'freight':data['freight'],
+        'category':data['category'],
+        'longitude':(data['mapData'][0][0]),
+        'latitude':(data['mapData'][0][1]),
+        'address':data['mapData'][1],
+        'maxrange':data['max_range']
+
+    }
+    print(req)
+    ACCESS_TOKEN = getAccessToken()
+    url = f'https://api.weixin.qq.com/tcb/invokecloudfunction?access_token={ACCESS_TOKEN}&env={settings.ENV}&name=quickstartFunctions'
+
+    data = {
+        "type": "createShop"
+    }
+    req['type']="createShop"
+    res = requests.post(url, data=json.dumps(req))
+    print(res.json())
+
     return JsonResponse(res.json())
