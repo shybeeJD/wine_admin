@@ -204,3 +204,47 @@ def getAddress(request):
         return JsonResponse(res.json())
 
     return JsonResponse({'success':False,'msg':'no address'})
+
+def getShops(request):
+    offset = request.GET.get('offset')
+    limit = request.GET.get('limit')
+    ACCESS_TOKEN = getAccessToken()
+    if  limit==None:
+        limit=10
+    if  offset==None:
+        offset=0
+    print(offset,limit)
+    url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
+
+    query = "db.collection('shop').limit(%d).skip(%d).get()" % (int(limit), int(offset))
+
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
+def getOrders(request):
+    offset = request.GET.get('offset')
+    limit = request.GET.get('limit')
+    status = request.GET.get('status')
+    ACCESS_TOKEN = getAccessToken()
+    if limit == None:
+        limit = 10
+    if offset == None:
+        offset = 0
+    url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
+    if(status):
+        query = "db.collection('order').where({status:%d}).limit(%d).skip(%d).get()" % (
+        int(status), int(limit), int(offset))
+    else:
+
+        query = "db.collection('order').limit(%d).skip(%d).get()" % (int(limit), int(offset))
+
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())

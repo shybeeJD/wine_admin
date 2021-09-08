@@ -33,5 +33,8 @@ urlpatterns = [
     path('api/changeStocks',views.changeStocks),
     path('api/refuseOrder',views.refuseOrder),
     path('api/getAddress',views.getAddress),
+    path('api/acceptOrder',views.acceptOrder),
+    path('api/getShops',views.getShops),
+    path('api/getOrders',views.getOrders),
 
 ]
