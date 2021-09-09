@@ -183,6 +183,7 @@ def getNewOrder(request):
 
 @csrf_exempt
 def getAllWines(request):
+    _id = request.GET.get('_id')
     ACCESS_TOKEN = getAccessToken()
     limit = request.GET.get('limit')
     offset = request.GET.get('offset')
@@ -208,6 +209,22 @@ def getAllWines(request):
 
     return JsonResponse(res.json())
 
+
+def updateStatus(request):
+    _id=request.GET.get('_id')
+    status = int(request.GET.get('status'))
+    ACCESS_TOKEN = getAccessToken()
+    url = f'https://api.weixin.qq.com/tcb/invokecloudfunction?access_token={ACCESS_TOKEN}&env={settings.ENV}&name=quickstartFunctions'
+
+    data = {
+        "type": "changeOrderStatus",
+        "status":status,
+        "_id":_id
+    }
+    res = requests.post(url, data=json.dumps(data))
+    print(res.json())
+
+    return JsonResponse(res.json())
 
 
 

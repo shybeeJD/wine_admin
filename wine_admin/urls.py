@@ -40,6 +40,8 @@ urlpatterns = [
     path('api/uploadpics',views.uploadpics),
     path('api/createWine',views.createWine),
     path('api/deletePic',views.deletePic),
-    path('api/showPic',views.showPic)
+    path('api/showPic',views.showPic),
+    path('api/updateStatus',views.updateStatus),
+    path('api/updateStock',views.updateStock)
 
 ]
