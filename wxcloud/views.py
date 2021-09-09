@@ -188,14 +188,21 @@ def getAllWines(request):
     limit = request.GET.get('limit')
     offset = request.GET.get('offset')
     category_name=request.GET.get('category_name')
+    shop_id = request.GET.get('shop_id')
     if  limit==None:
         limit=10
     if  offset==None:
         offset=0
 
     url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
-    if category_name:
+    if shop_id and category_name:
+        query = "db.collection('wine').where({shop:'%s',category_name:'%s'}).limit(%d).skip(%d).get()" % (
+        shop_id,category_name, int(limit), int(offset))
+    elif category_name:
         query = "db.collection('wine').where({category_name:'%s'}).limit(%d).skip(%d).get()"%(category_name,int(limit),int(offset))
+    elif shop_id:
+        query = "db.collection('wine').where({shop:'%s'}).limit(%d).skip(%d).get()" % (
+        shop_id, int(limit), int(offset))
     else:
         query = "db.collection('wine').limit(%d).skip(%d).get()" % (int(limit),int(offset))
 
