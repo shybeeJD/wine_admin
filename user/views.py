@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def login(request):
     if request.method == "POST":
+        return JsonResponse({'sessionid':1})
         username = request.POST.get("username")
         password = request.POST.get("password")
         redirectUrl=request.POST.get("redirectUrl")

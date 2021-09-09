@@ -7,6 +7,7 @@ from django.conf import settings
 import requests
 import json
 from django.views.decorators.csrf import csrf_exempt
+import datetime
 
 def getAccessToken():
 
@@ -77,8 +78,57 @@ def uploadPics(request):
     return JsonResponse({
         "success":True
     })
-
+@csrf_exempt
 def createWine(request):
+    data = (json.loads(request.body))
+    data = json.loads(data)
+    brand= data['brand'] if 'brand' in data else ""
+    category_name = data['category_name'] if 'category' in data else ""
+    degrees = data['degrees'] if 'degrees' in data else ""
+    isShowHP = data['isShowHP'] if 'isShowHP' in data else False
+    capacity = data['capacity'] if 'capacity' in data else ""
+    item = data['item'] if 'item' in data else ""
+    marketPrice = data['marketPrice'] if 'marketPrice' in data else 0
+    origin = data['origin'] if 'origin' in data else ""
+    packingsPrice = data['packingsPrice'] if 'packingsPrice' in data else 0
+    pic_array1 = data['pic_array1'] if 'pic_array1' in data else []
+    pic_array2 = data['pic_array2'] if 'pic_array2' in data else []
+    price = data['price'] if 'price' in data else 0
+    sale_count = data['sale_count'] if 'sale_count' in data else 0
+    shop = data['shop'] if 'shop' in data else ""
+    stock = int(data['stock']) if 'stock' in data else 0
+    thumb_url = data['thumb_url'] if 'thumb_url' in data else ""
+    title = data['title'] if 'title' in data else ""
+
+
+    req={
+        'brand':brand,
+        'category_name':category_name,
+        'marketPrice':marketPrice,
+        'item':item,
+        'origin':origin,
+        'packingsPrice':packingsPrice,
+        'pic_array':pic_array1,
+        'product_desc_url':pic_array2,
+        'price':price,
+        'shop':shop,
+        'specification':degrees+'度，'+capacity+'mL',
+        'stock':stock,
+        'thumb_url':thumb_url,
+        'title':title,
+        'recommend':isShowHP
+
+    }
+    ACCESS_TOKEN = getAccessToken()
+    url = f'https://api.weixin.qq.com/tcb/invokecloudfunction?access_token={ACCESS_TOKEN}&env={settings.ENV}&name=quickstartFunctions'
+
+    req['type'] = "createWine"
+    print(req)
+    res = requests.post(url, data=json.dumps(req))
+    print(res.json())
+
+    return JsonResponse(res.json())
+
 
     pass
 
@@ -131,6 +181,7 @@ def getNewOrder(request):
     res = requests.post(url, data=json.dumps(data))
     return JsonResponse(res.json())
 
+@csrf_exempt
 def getAllWines(request):
     ACCESS_TOKEN = getAccessToken()
     limit = request.GET.get('limit')
@@ -153,7 +204,13 @@ def getAllWines(request):
     }
 
     res = requests.post(url, data=json.dumps(data))
+
+
     return JsonResponse(res.json())
+
+
+
+
 def getAllOrders(request):
     ACCESS_TOKEN = getAccessToken()
     limit = request.GET.get('limit')
@@ -289,9 +346,54 @@ def uploadpics(request):
     file=request.FILES.get('file')
     if not file:
         return JsonResponse({'success':False})
+    uploadname = file.name
     f= open('pic/'+file.name,'wb+')
     for chunk in file.chunks():
         f.write(chunk)
     f.close()
+    ACCESS_TOKEN = getAccessToken()
+    time = str(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+    img_url = 'pic/'+file.name  # 待上传的文件
+    url1 = 'https://api.weixin.qq.com/tcb/uploadfile?access_token=' + ACCESS_TOKEN
+    data = {
+        "env": settings.ENV,
+        "path": 'pic/' + time + '.' + img_url.split('.')[-1]  # 保证相同的文件格式
+    }
+    res = requests.post(url1, data=json.dumps(data)).json()
+    print(res)
+    file = {"file": open(img_url, "rb")}
+    data = {
+        'key': 'pic/' + time + '.' + img_url.split('.')[-1],
+        'Signature': res['authorization'],
+        'x-cos-security-token': res['token'],
+        'x-cos-meta-fileid': res['cos_file_id']
+    }
+    res2=requests.post(res['url'], data=data, files=file)
+    print(res2)
+    return JsonResponse({'success':True,'name':res['file_id']})
+def deletePic(request):
+    pic=request.GET.get('pic')
+    ACCESS_TOKEN = getAccessToken()
+    print(pic)
+    url=f'https://api.weixin.qq.com/tcb/batchdeletefile?access_token={ACCESS_TOKEN}'
+    data={
+        "env": settings.ENV,
+        "fileid_list":[pic]
+    }
+    res = requests.post(url, data=json.dumps(data)).json()
+    return JsonResponse(res)
 
-    return JsonResponse({'success':True,'name':file.name})
+def showPic(request):
+    pic=request.GET.getlist('pic')
+    respPic = []
+
+    for item in pic:
+        respPic.append({'fileid': item, 'max_age': 7200})
+    ACCESS_TOKEN = getAccessToken()
+    url = f'https://api.weixin.qq.com/tcb/batchdownloadfile?access_token={ACCESS_TOKEN}'
+    data2 = {
+        "env": settings.ENV,
+        "file_list": respPic
+    }
+    res = requests.post(url, data=json.dumps(data2)).json()
+    return JsonResponse(res)
