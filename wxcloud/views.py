@@ -280,3 +280,18 @@ def updateShop(request):
     print(res.json())
 
     return JsonResponse(res.json())
+
+@csrf_exempt
+def uploadpics(request):
+    for key in request.FILES:
+        print(key)
+
+    file=request.FILES.get('file')
+    if not file:
+        return JsonResponse({'success':False})
+    f= open('pic/'+file.name,'wb+')
+    for chunk in file.chunks():
+        f.write(chunk)
+    f.close()
+
+    return JsonResponse({'success':True,'name':file.name})
