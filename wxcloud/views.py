@@ -408,7 +408,8 @@ def deletePic(request):
     return JsonResponse(res)
 
 def showPic(request):
-    pic=request.GET.getlist('pic')
+    #pic=request.GET.getlist('pic')
+    pic=request.GET.get('pic').split(',')
     respPic = []
 
     for item in pic:
