@@ -99,9 +99,11 @@ def createWine(request):
     stock = int(data['stock']) if 'stock' in data else 0
     thumb_url = data['thumb_url'] if 'thumb_url' in data else ""
     title = data['title'] if 'title' in data else ""
+    _id = data['_id'] if '_id' in data else None
 
 
     req={
+        '_id':_id,
         'brand':brand,
         'category_name':category_name,
         'marketPrice':marketPrice,
@@ -336,7 +338,7 @@ def updateShop(request):
     data=(json.loads(request.body))
     data=json.loads(data)
     print(data)
-    if id not in data:
+    if 'id' not in data:
         data['id']=None
     req={
         '_id':data['id'],
