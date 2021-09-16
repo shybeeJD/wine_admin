@@ -42,5 +42,6 @@ urlpatterns = [
     path('api/deletePic',views.deletePic),
     path('api/showPic',views.showPic),
     path('api/updateStatus',views.updateStatus),
+    path('api/achieveBill',views.achieveBill),
 
 ]

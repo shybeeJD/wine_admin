@@ -100,6 +100,7 @@ def createWine(request):
     thumb_url = data['thumb_url'] if 'thumb_url' in data else ""
     title = data['title'] if 'title' in data else ""
     _id = data['_id'] if '_id' in data else None
+    min_fee = data['min_fee'] if 'min_fee' in data else 0
 
 
     req={
@@ -118,7 +119,8 @@ def createWine(request):
         'stock':stock,
         'thumb_url':thumb_url,
         'title':title,
-        'recommend':isShowHP
+        'recommend':isShowHP,
+        'min_fee':min_fee,
 
     }
     ACCESS_TOKEN = getAccessToken()
@@ -242,14 +244,21 @@ def getAllOrders(request):
     limit = request.GET.get('limit')
     offset = request.GET.get('offset')
     status =request.GET.get('status')
+    bill = request.GET.get('bill')
     if  limit==None:
         limit=10
     if  offset==None:
         offset=0
 
+
     url = f'https://api.weixin.qq.com/tcb/databasequery?access_token={ACCESS_TOKEN}'
+    cmd=''
     if status:
-        query = "db.collection('order').where({status:%d}).limit(%d).skip(%d).get()"%(int(status),int(limit),int(offset))
+        cmd='status:%d,'%(int(status))
+    if bill:
+        cmd=cmd+'bill:%d'%(int(bill))
+    if status or bill:
+        query = "db.collection('order').where({%s}).limit(%d).skip(%d).get()"%(cmd,int(limit),int(offset))
     else:
         query = "db.collection('order').limit(%d).skip(%d).get()" % (int(limit),int(offset))
 
@@ -424,3 +433,15 @@ def showPic(request):
     }
     res = requests.post(url, data=json.dumps(data2)).json()
     return JsonResponse(res)
+
+def achieveBill(request):
+    _id = request.GET.get('_id')
+    ACCESS_TOKEN = getAccessToken()
+    url = f'https://api.weixin.qq.com/tcb/databaseupdate?access_token={ACCESS_TOKEN}'
+    query = "db.collection('order').where({'_id':'%s'}).update({'data':{'bill':2}})" % (_id)
+    data = {
+        "env": settings.ENV,
+        "query": query
+    }
+    res = requests.post(url, data=json.dumps(data))
+    return JsonResponse(res.json())
