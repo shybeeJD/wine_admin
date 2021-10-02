@@ -101,6 +101,7 @@ def createWine(request):
     title = data['title'] if 'title' in data else ""
     _id = data['_id'] if '_id' in data else None
     min_fee = data['min_fee'] if 'min_fee' in data else 0
+    description = data['description'] if 'min_fee' in data else None
 
 
     req={
@@ -115,7 +116,7 @@ def createWine(request):
         'product_desc_url':pic_array2,
         'price':price,
         'shop':shop,
-        'specification':degrees+'度，'+capacity+'mL',
+        'specification':description,
         'stock':stock,
         'thumb_url':thumb_url,
         'title':title,
@@ -349,8 +350,11 @@ def updateShop(request):
     print(data)
     if 'id' not in data:
         data['id']=None
+    if 'min_fee' not in data:
+        data['min_fee']=None
     req={
         '_id':data['id'],
+        'min_fee':data['min_fee'],
         'name':data['name'],
         'freight':data['freight'],
         'category':data['category'],
