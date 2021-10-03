@@ -100,8 +100,7 @@ def createWine(request):
     thumb_url = data['thumb_url'] if 'thumb_url' in data else ""
     title = data['title'] if 'title' in data else ""
     _id = data['_id'] if '_id' in data else None
-    min_fee = data['min_fee'] if 'min_fee' in data else 0
-    description = data['description'] if 'min_fee' in data else None
+    description = data['description'] if 'description' in data else None
 
 
     req={
@@ -121,7 +120,6 @@ def createWine(request):
         'thumb_url':thumb_url,
         'title':title,
         'recommend':isShowHP,
-        'min_fee':min_fee,
 
     }
     ACCESS_TOKEN = getAccessToken()
@@ -368,9 +366,6 @@ def updateShop(request):
     ACCESS_TOKEN = getAccessToken()
     url = f'https://api.weixin.qq.com/tcb/invokecloudfunction?access_token={ACCESS_TOKEN}&env={settings.ENV}&name=quickstartFunctions'
 
-    data = {
-        "type": "createShop"
-    }
     req['type']="createShop"
     res = requests.post(url, data=json.dumps(req))
     print(res.json())
