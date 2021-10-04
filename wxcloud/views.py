@@ -100,7 +100,7 @@ def createWine(request):
     thumb_url = data['thumb_url'] if 'thumb_url' in data else ""
     title = data['title'] if 'title' in data else ""
     _id = data['_id'] if '_id' in data else None
-    description = data['description'] if 'description' in data else None
+    specification = data['specification'] if 'specification' in data else None
 
 
     req={
@@ -115,7 +115,7 @@ def createWine(request):
         'product_desc_url':pic_array2,
         'price':price,
         'shop':shop,
-        'specification':description,
+        'specification':specification,
         'stock':stock,
         'thumb_url':thumb_url,
         'title':title,
